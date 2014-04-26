@@ -92,7 +92,7 @@
 
         if (typeof func === 'function') { this._init = func; }
 
-        return this;
+        return this._init;
 
     };
 
@@ -100,7 +100,7 @@
 
         if (typeof func === 'function') { this._destory = func; }
 
-        return this;
+        return this._destory;
 
     };
 
@@ -108,7 +108,7 @@
 
         if (typeof func === 'function') { this._draw = func; }
 
-        return this;
+        return this._draw;
 
     };
 
@@ -116,7 +116,7 @@
 
         if (typeof func === 'function') { this._pause = func; }
 
-        return this;
+        return this._pause;
 
     };
 
