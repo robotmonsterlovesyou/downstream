@@ -21,3 +21,8 @@ h1 {
 a {
     color: #00f;
 }
+
+canvas {
+    margin: 1em 0;
+    background-color: #7EC6D5;
+}
