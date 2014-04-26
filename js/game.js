@@ -67,7 +67,7 @@
 
         if (currentScene) {
 
-            this.getCurrentScene()._destory.call(currentScene, this);
+            currentScene._pause(this);
 
         }
 
@@ -84,6 +84,7 @@
         this._init = function () { return undefined; };
         this._destory = function () { return undefined; };
         this._draw = function (game) { game.stage.clear(); };
+        this._pause = function () { return undefined; };
 
     };
 
@@ -106,6 +107,14 @@
     Game.Scene.prototype.draw = function (func) {
 
         if (typeof func === 'function') { this._draw = func; }
+
+        return this;
+
+    };
+
+    Game.Scene.prototype.pause = function (func) {
+
+        if (typeof func === 'function') { this._pause = func; }
 
         return this;
 
