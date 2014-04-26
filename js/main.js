@@ -48,6 +48,8 @@
 
             if (!e.metaKey) {
 
+                e.preventDefault();
+
                 game.pushScene(gameScene);
 
             }
@@ -105,32 +107,29 @@
             anchor: 'center'
         });
 
-        this.methods.handleKeyPress = function (e) {
+        this.methods.handleKeyInteraction = function (e) {
 
-            if (Object.keys(self.data.keyMapping).indexOf(String(e.keyCode)) !== -1) {
+            if (!e.metaKey && Object.keys(self.data.keyMapping).indexOf(String(e.keyCode)) !== -1) {
 
                 e.preventDefault();
 
-                self.data.activeKeys[self.data.keyMapping[e.keyCode]] = true;
+                if (e.type === 'keydown') {
+
+                    self.data.activeKeys[self.data.keyMapping[e.keyCode]] = true;
+
+                } else if (e.type === 'keyup') {
+
+                    self.data.activeKeys[self.data.keyMapping[e.keyCode]] = false;
+
+                }
+
 
             }
 
         };
 
-        this.methods.handleKeyRelease = function (e) {
-
-            if (Object.keys(self.data.keyMapping).indexOf(String(e.keyCode)) !== -1) {
-
-                e.preventDefault();
-
-                self.data.activeKeys[self.data.keyMapping[e.keyCode]] = false;
-
-            }
-
-        };
-
-        document.addEventListener('keydown', this.methods.handleKeyPress);
-        document.addEventListener('keyup', this.methods.handleKeyRelease);
+        document.addEventListener('keydown', this.methods.handleKeyInteraction);
+        document.addEventListener('keyup', this.methods.handleKeyInteraction);
 
     });
 
