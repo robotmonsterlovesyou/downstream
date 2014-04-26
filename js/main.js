@@ -1,11 +1,16 @@
+/*jslint browser: true */
+/*globals Game, Facade*/
+
 (function () {
+
+    'use strict';
 
     var game = new Game(),
         titleScene = new Game.Scene('title'),
-        gameScene = new Game.Scene('game'),
-        endGameScene = new Game.Scene('end-game'),
-        leaderboardScene = new Game.Scene('leaderboard'),
-        creditsScene = new Game.Scene('credits');
+        gameScene = new Game.Scene('game');
+        // endGameScene = new Game.Scene('end-game'),
+        // leaderboardScene = new Game.Scene('leaderboard'),
+        // creditsScene = new Game.Scene('credits');
 
     titleScene.init(function (game) {
 
@@ -16,6 +21,7 @@
             y: 150,
             fontFamily: 'Helvetica Neue',
             fontSize: 70,
+            fillStyle: '#FCFCFC',
             width: game.stage.width(),
             textAlignment: 'center'
         });
@@ -24,6 +30,7 @@
             y: 250,
             fontFamily: 'Helvetica Neue',
             fontSize: 24,
+            fillStyle: '#FCFCFC',
             width: game.stage.width(),
             textAlignment: 'center'
         });
@@ -32,13 +39,18 @@
             y: 500,
             fontFamily: 'Helvetica Neue',
             fontSize: 24,
+            fillStyle: '#FCFCFC',
             width: game.stage.width(),
             textAlignment: 'center'
         });
 
         this.methods.handlePressToStart = function (e) {
 
-            game.pushScene(gameScene);
+            if (!e.metaKey) {
+
+                game.pushScene(gameScene);
+
+            }
 
         };
 
@@ -122,7 +134,7 @@
 
     });
 
-    gameScene.destory(function (game) {
+    gameScene.destory(function () {
 
         delete this.data.keyMapping;
         delete this.data.activeKeys;

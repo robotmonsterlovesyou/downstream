@@ -1,3 +1,6 @@
+/*jslint browser: true, nomen: true */
+/*globals Facade */
+
 (function () {
 
     'use strict';
@@ -12,13 +15,13 @@
 
     };
 
-    Game.prototype.callback = function (stage) {
+    Game.prototype.callback = function () {
 
         var currentScene = this.getCurrentScene();
 
         if (currentScene) {
 
-            currentScene._draw.call(currentScene, this);
+            currentScene._draw(this);
 
         }
 
@@ -28,23 +31,21 @@
 
         if (this.scenes.length) {
 
-            return this.scenes[this.scenes.length -1];
-
-        } else {
-
-            return undefined;
+            return this.scenes[this.scenes.length - 1];
 
         }
 
+        return false;
+
     };
 
-    Game.prototype.popScene = function (scene) {
+    Game.prototype.popScene = function () {
 
         var currentScene = this.scenes.pop();
 
         if (currentScene) {
 
-            currentScene._destory.call(currentScene, this);
+            currentScene._destory(this);
 
         }
 
@@ -52,7 +53,7 @@
 
         if (currentScene) {
 
-            currentScene._init.call(currentScene, this);
+            currentScene._init(this);
 
         }
 
@@ -70,7 +71,7 @@
 
         }
 
-        scene._init.call(scene, this);
+        scene._init(this);
 
         return this.scenes.push(scene);
 
@@ -78,8 +79,10 @@
 
     Game.Scene = function (label) {
 
-        this._init = function (game) { };
-        this._destory = function (game) { };
+        this.label = label;
+
+        this._init = function () { return undefined; };
+        this._destory = function () { return undefined; };
         this._draw = function (game) { game.stage.clear(); };
 
     };
