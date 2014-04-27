@@ -92,7 +92,7 @@
         this._init = function () { return undefined; };
         this._destory = function () { return undefined; };
         this._draw = function (game) { game.stage.clear(); };
-        this._pause = function () { return undefined; };
+        this._pause = function (game) { this.destory().call(this, game); };
 
     };
 

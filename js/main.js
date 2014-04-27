@@ -1,5 +1,5 @@
-/*jslint browser: true */
-/*globals Game, Facade*/
+/*jslint browser: true, nomen: true */
+/*globals Game, Facade, SAT*/
 
 (function () {
 
@@ -9,34 +9,6 @@
         titleScene = new Game.Scene('title'),
         gameScene = new Game.Scene('game'),
         pauseScene = new Game.Scene('pause');
-        // endGameScene = new Game.Scene('end-game'),
-        // leaderboardScene = new Game.Scene('leaderboard'),
-        // creditsScene = new Game.Scene('credits');
-
-    function checkCollision(a, b) {
-
-        var test = false;
-
-        if (a && !(a instanceof SAT.Box)) { a = setVector(a); }
-        if (b && !(b instanceof SAT.Box)) { b = setVector(b); }
-
-        if (a instanceof SAT.Vector && b instanceof SAT.Box) {
-
-            test = SAT.pointInPolygon(a, b.toPolygon());
-
-        } else if (b instanceof SAT.Vector && a instanceof SAT.Box) {
-
-            test = SAT.pointInPolygon(b, a.toPolygon());
-
-        } else if (a instanceof SAT.Box && b instanceof SAT.Box) {
-
-            test = SAT.testPolygonPolygon(a.toPolygon(), b.toPolygon());
-
-        }
-
-        return test;
-
-    }
 
     function setVector(obj) {
 
@@ -77,6 +49,31 @@
         }
 
         return entity.__vector;
+
+    }
+
+    function checkCollision(a, b) {
+
+        var test = false;
+
+        if (a && !(a instanceof SAT.Box)) { a = setVector(a); }
+        if (b && !(b instanceof SAT.Box)) { b = setVector(b); }
+
+        if (a instanceof SAT.Vector && b instanceof SAT.Box) {
+
+            test = SAT.pointInPolygon(a, b.toPolygon());
+
+        } else if (b instanceof SAT.Vector && a instanceof SAT.Box) {
+
+            test = SAT.pointInPolygon(b, a.toPolygon());
+
+        } else if (a instanceof SAT.Box && b instanceof SAT.Box) {
+
+            test = SAT.testPolygonPolygon(a.toPolygon(), b.toPolygon());
+
+        }
+
+        return test;
 
     }
 
@@ -140,12 +137,6 @@
 
     });
 
-    titleScene.pause(function (game) {
-
-        titleScene.destory().call(this, game);
-
-    });
-
     titleScene.draw(function (game) {
 
         game.stage.clear();
@@ -172,7 +163,7 @@
 
             this.assets.player = new Facade.Rect({
                 x: game.stage.width() / 2,
-                y: game.stage.height() - 100,
+                y: game.stage.height() - 150,
                 width: 65,
                 height: 65,
                 fillStyle: '#FCFCFC',
@@ -214,18 +205,12 @@
 
     });
 
-    gameScene.destory(function (game) {
+    gameScene.destory(function () {
 
         document.removeEventListener('keydown', this.methods.handleKeyInteraction);
         document.removeEventListener('keyup', this.methods.handleKeyInteraction);
 
         window.removeEventListener('blur', this.methods.handleWindowBlur);
-
-    });
-
-    gameScene.pause(function (game) {
-
-        gameScene.destory().call(this, game);
 
     });
 
@@ -309,7 +294,7 @@
 
     });
 
-    pauseScene.destory(function (game) {
+    pauseScene.destory(function () {
 
         document.removeEventListener('keydown', gameScene.methods.handleKeyInteraction);
 
