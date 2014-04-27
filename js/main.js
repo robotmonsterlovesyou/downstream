@@ -160,12 +160,13 @@
 
         var self = this;
 
-        if (!this.data && !this.assets && !this.methods) {
+        this.data = {
+            keyMapping: { 37: 'left', 38: 'up', 39: 'right', 40: 'down', 27: 'escape' },
+            activeKeys: { left: false, down: false, right: false, up: false, escape: false }
+        };
 
-            this.data = {
-                keyMapping: { 37: 'left', 38: 'up', 39: 'right', 40: 'down', 27: 'escape' },
-                activeKeys: { left: false, down: false, right: false, up: false, escape: false }
-            };
+        if (!this.assets && !this.methods) {
+
             this.assets = {};
             this.methods = {};
 
@@ -198,29 +199,27 @@
 
             };
 
-            this.methods.handleClick = function (e) {
+            this.methods.handleWindowBlur = function () {
 
-                console.log({ x: e.layerX, y: e.layerY });
-
-                console.log(checkCollision({ x: e.layerX, y: e.layerY }, getEntityVector(gameScene.assets.player)));
+                game.pushScene(pauseScene);
 
             };
 
         }
 
-        game.stage.canvas.addEventListener('click', this.methods.handleClick);
-
         document.addEventListener('keydown', this.methods.handleKeyInteraction);
         document.addEventListener('keyup', this.methods.handleKeyInteraction);
+
+        window.addEventListener('blur', this.methods.handleWindowBlur);
 
     });
 
     gameScene.destory(function (game) {
 
-        game.stage.canvas.removeEventListener('click', this.methods.handleClick);
-
         document.removeEventListener('keydown', this.methods.handleKeyInteraction);
         document.removeEventListener('keyup', this.methods.handleKeyInteraction);
+
+        window.removeEventListener('blur', this.methods.handleWindowBlur);
 
     });
 
@@ -242,23 +241,17 @@
 
         game.stage.clear();
 
-        if (this.data.activeKeys.up) {
-
-            this.assets.player.setOptions({ y: this.assets.player.getOption('y') - 2 });
-
-        } else if (this.data.activeKeys.down) {
-
-            this.assets.player.setOptions({ y: this.assets.player.getOption('y') + 2 });
-
-        }
-
         if (this.data.activeKeys.left) {
 
             this.assets.player.setOptions({ x: this.assets.player.getOption('x') - 2 });
 
+            setEntityVector(this.assets.player);
+
         } else if (this.data.activeKeys.right) {
 
             this.assets.player.setOptions({ x: this.assets.player.getOption('x') + 2 });
+
+            setEntityVector(this.assets.player);
 
         }
 
