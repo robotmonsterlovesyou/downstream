@@ -13,6 +13,73 @@
         // leaderboardScene = new Game.Scene('leaderboard'),
         // creditsScene = new Game.Scene('credits');
 
+    function checkCollision(a, b) {
+
+        var test = false;
+
+        if (a && !(a instanceof SAT.Box)) { a = setVector(a); }
+        if (b && !(b instanceof SAT.Box)) { b = setVector(b); }
+
+        if (a instanceof SAT.Vector && b instanceof SAT.Box) {
+
+            test = SAT.pointInPolygon(a, b.toPolygon());
+
+        } else if (b instanceof SAT.Vector && a instanceof SAT.Box) {
+
+            test = SAT.pointInPolygon(b, a.toPolygon());
+
+        } else if (a instanceof SAT.Box && b instanceof SAT.Box) {
+
+            test = SAT.testPolygonPolygon(a.toPolygon(), b.toPolygon());
+
+        }
+
+        return test;
+
+    }
+
+    function setVector(obj) {
+
+        var vector;
+
+        if (obj.x !== 'undefined' && typeof obj.x !== 'undefined') {
+
+            vector = new SAT.Vector(obj.x, obj.y);
+
+            if (typeof obj.width !== 'undefined' && typeof obj.height !== 'undefined') {
+
+                vector = new SAT.Box(vector, obj.width, obj.height);
+
+            }
+
+        }
+
+        return vector;
+
+    }
+
+    function setEntityVector(entity) {
+
+        var metrics = entity.getAllMetrics();
+
+        entity.__vector = setVector(metrics);
+
+        return entity.__vector;
+
+    }
+
+    function getEntityVector(entity) {
+
+        if (typeof entity.__vector === 'undefined') {
+
+            setEntityVector(entity);
+
+        }
+
+        return entity.__vector;
+
+    }
+
     titleScene.init(function (game) {
 
         if (!this.assets && !this.methods) {
@@ -105,8 +172,8 @@
             this.assets.player = new Facade.Rect({
                 x: game.stage.width() / 2,
                 y: game.stage.height() - 100,
-                width: 100,
-                height: 100,
+                width: 65,
+                height: 65,
                 fillStyle: '#FCFCFC',
                 anchor: 'center'
             });
@@ -133,7 +200,9 @@
 
             this.methods.handleClick = function (e) {
 
-                console.log(e);
+                console.log({ x: e.layerX, y: e.layerY });
+
+                console.log(checkCollision({ x: e.layerX, y: e.layerY }, getEntityVector(gameScene.assets.player)));
 
             };
 
@@ -146,12 +215,18 @@
 
     });
 
-    gameScene.destory(function () {
+    gameScene.destory(function (game) {
 
         game.stage.canvas.removeEventListener('click', this.methods.handleClick);
 
         document.removeEventListener('keydown', this.methods.handleKeyInteraction);
         document.removeEventListener('keyup', this.methods.handleKeyInteraction);
+
+    });
+
+    gameScene.pause(function (game) {
+
+        gameScene.destory().call(this, game);
 
     });
 
@@ -169,21 +244,21 @@
 
         if (this.data.activeKeys.up) {
 
-            this.assets.player.setOptions({ y: this.assets.player.getOption('y') - 5 });
+            this.assets.player.setOptions({ y: this.assets.player.getOption('y') - 2 });
 
         } else if (this.data.activeKeys.down) {
 
-            this.assets.player.setOptions({ y: this.assets.player.getOption('y') + 5 });
+            this.assets.player.setOptions({ y: this.assets.player.getOption('y') + 2 });
 
         }
 
         if (this.data.activeKeys.left) {
 
-            this.assets.player.setOptions({ x: this.assets.player.getOption('x') - 5 });
+            this.assets.player.setOptions({ x: this.assets.player.getOption('x') - 2 });
 
         } else if (this.data.activeKeys.right) {
 
-            this.assets.player.setOptions({ x: this.assets.player.getOption('x') + 5 });
+            this.assets.player.setOptions({ x: this.assets.player.getOption('x') + 2 });
 
         }
 
@@ -209,7 +284,7 @@
 
         }
 
-        document.addEventListener('keydown', gameScene.methods.handlePressToReturnToGame);
+        document.addEventListener('keydown', gameScene.methods.handleKeyInteraction);
 
     });
 
@@ -243,10 +318,10 @@
 
     pauseScene.destory(function (game) {
 
-        document.removeEventListener('keydown', gameScene.methods.handlePressToReturnToGame);
+        document.removeEventListener('keydown', gameScene.methods.handleKeyInteraction);
 
     });
 
-    game.pushScene(titleScene);
+    game.pushScene(gameScene);
 
 }());
