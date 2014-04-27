@@ -67,6 +67,14 @@
 
         if (currentScene) {
 
+            if (!currentScene.pauseState) {
+
+                currentScene.pauseState = document.createElement('img');
+
+            }
+
+            currentScene.pauseState.setAttribute('src', this.stage.exportBase64());
+
             currentScene._pause(this);
 
         }
