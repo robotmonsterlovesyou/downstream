@@ -7,54 +7,59 @@
 
     var game = new Game(),
         titleScene = new Game.Scene('title'),
-        gameScene = new Game.Scene('game');
+        gameScene = new Game.Scene('game'),
+        pauseScene = new Game.Scene('pause');
         // endGameScene = new Game.Scene('end-game'),
         // leaderboardScene = new Game.Scene('leaderboard'),
         // creditsScene = new Game.Scene('credits');
 
     titleScene.init(function (game) {
 
-        this.assets = {};
-        this.methods = {};
+        if (!this.assets && !this.methods) {
 
-        this.assets.title = new Facade.Text('Downstream', {
-            y: 150,
-            fontFamily: 'Helvetica Neue',
-            fontSize: 70,
-            fillStyle: '#FCFCFC',
-            width: game.stage.width(),
-            textAlignment: 'center'
-        });
+            this.assets = {};
+            this.methods = {};
 
-        this.assets.subtitle = new Facade.Text('An Iceberg’s Tale of Adventure', {
-            y: 250,
-            fontFamily: 'Helvetica Neue',
-            fontSize: 24,
-            fillStyle: '#FCFCFC',
-            width: game.stage.width(),
-            textAlignment: 'center'
-        });
+            this.assets.title = new Facade.Text('Downstream', {
+                y: 150,
+                fontFamily: 'Helvetica Neue',
+                fontSize: 70,
+                fillStyle: '#FCFCFC',
+                width: game.stage.width(),
+                textAlignment: 'center'
+            });
 
-        this.assets.presstostart = new Facade.Text('Press Any Button To Start', {
-            y: 500,
-            fontFamily: 'Helvetica Neue',
-            fontSize: 24,
-            fillStyle: '#FCFCFC',
-            width: game.stage.width(),
-            textAlignment: 'center'
-        });
+            this.assets.subtitle = new Facade.Text('An Iceberg’s Tale of Adventure', {
+                y: 250,
+                fontFamily: 'Helvetica Neue',
+                fontSize: 24,
+                fillStyle: '#FCFCFC',
+                width: game.stage.width(),
+                textAlignment: 'center'
+            });
 
-        this.methods.handlePressToStart = function (e) {
+            this.assets.presstostart = new Facade.Text('Press Any Button To Start', {
+                y: 500,
+                fontFamily: 'Helvetica Neue',
+                fontSize: 24,
+                fillStyle: '#FCFCFC',
+                width: game.stage.width(),
+                textAlignment: 'center'
+            });
 
-            if (!e.metaKey) {
+            this.methods.handlePressToStart = function (e) {
 
-                e.preventDefault();
+                if (!e.metaKey) {
 
-                game.pushScene(gameScene);
+                    e.preventDefault();
 
-            }
+                    game.pushScene(gameScene);
 
-        };
+                }
+
+            };
+
+        }
 
         game.stage.canvas.addEventListener('click', this.methods.handlePressToStart);
         document.addEventListener('keydown', this.methods.handlePressToStart);
@@ -66,14 +71,11 @@
         game.stage.canvas.removeEventListener('click', this.methods.handlePressToStart);
         document.removeEventListener('keydown', this.methods.handlePressToStart);
 
-        delete this.assets.title;
-        delete this.assets.subtitle;
-        delete this.assets.presstostart;
+    });
 
-        delete this.methods.handlePressToStart;
+    titleScene.pause(function (game) {
 
-        delete this.assets;
-        delete this.methods;
+        titleScene.destory().call(this, game);
 
     });
 
@@ -91,42 +93,53 @@
 
         var self = this;
 
-        this.data = {
-            keyMapping: { 37: 'left', 38: 'up', 39: 'right', 40: 'down' },
-            activeKeys: { left: false, down: false, right: false, up: false }
-        };
-        this.assets = {};
-        this.methods = {};
+        if (!this.data && !this.assets && !this.methods) {
 
-        this.assets.player = new Facade.Rect({
-            x: game.stage.width() / 2,
-            y: game.stage.height() - 100,
-            width: 100,
-            height: 100,
-            fillStyle: '#FCFCFC',
-            anchor: 'center'
-        });
+            this.data = {
+                keyMapping: { 37: 'left', 38: 'up', 39: 'right', 40: 'down', 27: 'escape' },
+                activeKeys: { left: false, down: false, right: false, up: false, escape: false }
+            };
+            this.assets = {};
+            this.methods = {};
 
-        this.methods.handleKeyInteraction = function (e) {
+            this.assets.player = new Facade.Rect({
+                x: game.stage.width() / 2,
+                y: game.stage.height() - 100,
+                width: 100,
+                height: 100,
+                fillStyle: '#FCFCFC',
+                anchor: 'center'
+            });
 
-            if (!e.metaKey && Object.keys(self.data.keyMapping).indexOf(String(e.keyCode)) !== -1) {
+            this.methods.handleKeyInteraction = function (e) {
 
-                e.preventDefault();
+                if (!e.metaKey && Object.keys(self.data.keyMapping).indexOf(String(e.keyCode)) !== -1) {
 
-                if (e.type === 'keydown') {
+                    e.preventDefault();
 
-                    self.data.activeKeys[self.data.keyMapping[e.keyCode]] = true;
+                    if (e.type === 'keydown') {
 
-                } else if (e.type === 'keyup') {
+                        self.data.activeKeys[self.data.keyMapping[e.keyCode]] = true;
 
-                    self.data.activeKeys[self.data.keyMapping[e.keyCode]] = false;
+                    } else if (e.type === 'keyup') {
+
+                        self.data.activeKeys[self.data.keyMapping[e.keyCode]] = false;
+
+                    }
 
                 }
 
+            };
 
-            }
+            this.methods.handleClick = function (e) {
 
-        };
+                console.log(e);
+
+            };
+
+        }
+
+        game.stage.canvas.addEventListener('click', this.methods.handleClick);
 
         document.addEventListener('keydown', this.methods.handleKeyInteraction);
         document.addEventListener('keyup', this.methods.handleKeyInteraction);
@@ -135,16 +148,22 @@
 
     gameScene.destory(function () {
 
-        delete this.data.keyMapping;
-        delete this.data.activeKeys;
-        delete this.assets.player;
+        game.stage.canvas.removeEventListener('click', this.methods.handleClick);
 
-        delete this.data;
-        delete this.assets;
+        document.removeEventListener('keydown', this.methods.handleKeyInteraction);
+        document.removeEventListener('keyup', this.methods.handleKeyInteraction);
 
     });
 
     gameScene.draw(function (game) {
+
+        if (this.data.activeKeys.escape) {
+
+            game.pushScene(pauseScene);
+
+            this.data.activeKeys.escape = false;
+
+        }
 
         game.stage.clear();
 
@@ -169,6 +188,62 @@
         }
 
         game.stage.addToStage(this.assets.player);
+
+    });
+
+    pauseScene.init(function (game) {
+
+        if (!this.assets && !this.methods) {
+
+            this.assets = {};
+            this.methods = {};
+
+            this.assets.pause = new Facade.Text('PAUSE', {
+                y: 150,
+                fontFamily: 'Helvetica Neue',
+                fontSize: 70,
+                fillStyle: '#FCFCFC',
+                width: game.stage.width(),
+                textAlignment: 'center'
+            });
+
+        }
+
+        document.addEventListener('keydown', gameScene.methods.handlePressToReturnToGame);
+
+    });
+
+    pauseScene.draw(function (game) {
+
+        if (gameScene.data.activeKeys.escape) {
+
+            game.popScene();
+
+            gameScene.data.activeKeys.escape = false;
+
+        }
+
+        game.stage.clear();
+
+        if (gameScene.pauseState.complete) {
+
+            game.stage.context.save();
+
+            game.stage.context.globalAlpha = 0.1;
+
+            game.stage.context.drawImage(gameScene.pauseState, 0, 0);
+
+            game.stage.context.restore();
+
+        }
+
+        game.stage.addToStage(this.assets.pause);
+
+    });
+
+    pauseScene.destory(function (game) {
+
+        document.removeEventListener('keydown', gameScene.methods.handlePressToReturnToGame);
 
     });
 
